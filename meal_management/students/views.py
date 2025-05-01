@@ -1,10 +1,13 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
 from datetime import timedelta, time
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Student, DailyMealStatus
+from datetime import date
+
+
+from .models import Student, DailyMealStatus, MonthlyMealType
 
 
 # Create your views here.
@@ -34,3 +37,17 @@ def toggle_meal_status(request):
         "status": status_obj,
         "tomorrow": tomorrow,
     })
+    
+    
+    
+    
+def show_current_meal_type(request):
+    student = get_object_or_404(Student, user=request.user)
+    
+    today = date.today()
+    
+    first_of_month = today.replace(day=1)
+    
+    current_type = MonthlyMealType.objects.get(student=student, month=first_of_month).meal_type
+    
+    return render(request, "students/current_meal_type.html", {"meal_type": current_type})

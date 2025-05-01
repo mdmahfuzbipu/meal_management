@@ -11,9 +11,11 @@ class Student(models.Model):
     department = models.CharField(max_length=50)
     floor = models.CharField(max_length=15)
     batch = models.CharField(max_length=10)
-    meal_type = models.IntegerField(choices=[(1, 'Type 1'), (2, 'Type 2')])
     ongoing_meal_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_meal_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+    class Meta:
+        ordering = ['room', 'name']
     
     def __str__(self):
         return self.name
@@ -30,6 +32,18 @@ class DailyMealStatus(models.Model):
     def __str__(self):
         return f"{self.student.name} - {self.date} {"ON" if self.status else "OFF"}"
 
+class MonthlyMealType(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    month = models.DateField()
+    meal_type = models.IntegerField(choices=[(1, 'Type 1'), (2, 'Type 2')])
+
+    class Meta:
+        unique_together = ('student', 'month')
+    
+    def __str__(self):
+        return f"{self.student.name} - {self.month.strftime("%B %Y")} - Type {self.meal_type}"
+    
+    
 class MealSummary(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE)
     total_days_meal_consumed = models.IntegerField(default=0)
@@ -42,12 +56,7 @@ class MealSummary(models.Model):
         return f"{self.student.name} Meal Summary"
 
 
-class MealInfo(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE)
-    meal_status = models.BooleanField(default=True)
-    
-    def __str__(self):
-        return f"{self.student.name} Meal Info"
+
     
 
 # class ManagerView(models.Model):
