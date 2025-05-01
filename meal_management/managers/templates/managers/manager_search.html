@@ -1,0 +1,27 @@
+<form method="GET">
+    <label for="room">Enter Room Number:</label>
+    <input type="number" id="room" name="room" required>
+    <button type="submit">Search</button>
+</form>
+
+{% if students %}
+    <h2>Result for Room {{ request.GET.room}}</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Meal Type</th>
+            <th>Meal Status</th>
+        </tr>
+
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.meal_type }}</td>
+            <td>{{ student.mealinfo.meal_status|yesno:"On,Off" }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+{% elif request.GET.room %}
+    <p>No Students found for this room</p>
+{% endif %}

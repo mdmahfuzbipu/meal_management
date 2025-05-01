@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Meal Stats</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+    <h2>Daily Meal Statistics</h2>
+
+ <form action="{% url 'trigger_meal_count' %}" method="post" class="my-3">
+    {% csrf_token %}
+    <button class="btn btn-primary">Generate Today's Meal Count</button>
+</form>
+
+  <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Meal Type 1 Total</th>
+                <th>Meal Type 2 Total</th>
+                <th>Total Meals On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in stats %}
+            <tr>
+                <td>{{ stat.date }}</td>
+                <td>{{ stat.meal_type1_total }}</td>
+                <td>{{ stat.meal_type2_total }}</td>
+                <td>{{ stat.meal_type1_total|add:stat.meal_type2_total }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No stats found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
