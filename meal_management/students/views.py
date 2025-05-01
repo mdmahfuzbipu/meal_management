@@ -4,11 +4,11 @@ from datetime import timedelta, time
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from datetime import date
+from datetime import date, timedelta
 
 
 from .models import Student, DailyMealStatus, MonthlyMealType
-
+from .forms import MealTypeChangeForm
 
 # Create your views here.
 
@@ -51,3 +51,32 @@ def show_current_meal_type(request):
     current_type = MonthlyMealType.objects.get(student=student, month=first_of_month).meal_type
     
     return render(request, "students/current_meal_type.html", {"meal_type": current_type})
+
+
+
+def change_monthly_meal(request):
+    student = get_object_or_404(Student, user=request.user)
+    today = date.today()
+    next_month = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
+    
+    if request.method == "POST":
+        form = MealTypeChangeForm(request.POST)
+        if form.is_valid():
+            meal_type = form.cleaned_data["meal_type"]
+            obj, created = MonthlyMealType.objects.update_or_create(
+                student=student,
+                month=next_month,
+                defaults={"meal_type": meal_type}
+            )
+            
+            messages.success(request, "Meal type updated for next month.")
+            return redirect("current_meal_type")
+        
+        else:
+            form = MealTypeChangeForm()
+        
+        return render(request, "students/change_meal_type.html",{
+            "form":form,
+            "next_month": next_month.strftime("%B %Y")
+        })
+            
