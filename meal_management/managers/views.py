@@ -3,9 +3,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
 
-from students.models import Student, MealInfo
+from students.models import Student
 from .models import MealCount
-from .utils import generate_meal_count
+# from .utils import generate_meal_count
 # Create your views here.
 
 @staff_member_required
@@ -13,10 +13,10 @@ def daily_meal_stats_view(request):
     stats = MealCount.objects.order_by('-date')
     return render(request, "managers/daily_meal_stats.html", {'stats': stats})
 
-@staff_member_required
-def trigger_meal_count(request):
-    generate_meal_count()
-    return redirect('daily_meal_stats')
+# @staff_member_required
+# def trigger_meal_count(request):
+#     generate_meal_count()
+#     return redirect('daily_meal_stats')
 
 
 def search_by_room(request):
