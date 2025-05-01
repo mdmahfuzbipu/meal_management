@@ -1,11 +1,9 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.utils import timezone
-from datetime import timedelta, time
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from datetime import date, timedelta
-
+from datetime import timedelta, time, datetime, date
 
 from .models import Student, DailyMealStatus, MonthlyMealType
 from .forms import MealTypeChangeForm
@@ -40,7 +38,7 @@ def toggle_meal_status(request):
     
     
     
-    
+@login_required
 def show_current_meal_type(request):
     student = get_object_or_404(Student, user=request.user)
     
@@ -53,30 +51,80 @@ def show_current_meal_type(request):
     return render(request, "students/current_meal_type.html", {"meal_type": current_type})
 
 
-
-def change_monthly_meal(request):
-    student = get_object_or_404(Student, user=request.user)
-    today = date.today()
-    next_month = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
+@login_required
+def change_meal_type(request):
+    user = request.user
+    student = user.student
+    
+    now = timezone.now()
+    today = now.date()
+    
+    first_day_next_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
+    last_day_of_month = first_day_next_month - timedelta(days=1)
+    
+    
+    cutoff_time = datetime.combine(last_day_of_month, datetime.strptime("18:00", "%H:%M").time())
+    cutoff_time = timezone.make_aware(cutoff_time)
+    
+    
+    if timezone.now() > cutoff_time:
+        messages.error(request, "You cannot change meal type after 6:00 PM on the last day of the month.")
+        return redirect("change_meal_type")
     
     if request.method == "POST":
         form = MealTypeChangeForm(request.POST)
         if form.is_valid():
             meal_type = form.cleaned_data["meal_type"]
-            obj, created = MonthlyMealType.objects.update_or_create(
+            
+            meal_month = first_day_next_month
+            
+            obj, created = MonthlyMealType.objects.get_or_create(
                 student=student,
-                month=next_month,
+                month=meal_month,
                 defaults={"meal_type": meal_type}
             )
             
-            messages.success(request, "Meal type updated for next month.")
-            return redirect("current_meal_type")
+            if not created:
+                obj.meal_type = meal_type
+                obj.save()
+                
+            
+            messages.success(request, "Meal type updated for next month")
+            return redirect("change_meal_type")
+    
+    else:
+        form = MealTypeChangeForm()
         
-        else:
-            form = MealTypeChangeForm()
+    return render(request, "students/change_meal_type.html", {
+        "form": form,
+        "cutoff_time": cutoff_time
+    })
+
+
+
+# def change_monthly_meal(request):
+#     student = get_object_or_404(Student, user=request.user)
+#     today = date.today()
+#     next_month = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
+    
+#     if request.method == "POST":
+#         form = MealTypeChangeForm(request.POST)
+#         if form.is_valid():
+#             meal_type = form.cleaned_data["meal_type"]
+#             obj, created = MonthlyMealType.objects.update_or_create(
+#                 student=student,
+#                 month=next_month,
+#                 defaults={"meal_type": meal_type}
+#             )
+            
+#             messages.success(request, "Meal type updated for next month.")
+#             return redirect("current_meal_type")
         
-        return render(request, "students/change_meal_type.html",{
-            "form":form,
-            "next_month": next_month.strftime("%B %Y")
-        })
+#         else:
+#             form = MealTypeChangeForm()
+        
+#         return render(request, "students/change_meal_type.html",{
+#             "form":form,
+#             "next_month": next_month.strftime("%B %Y")
+#         })
             

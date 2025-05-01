@@ -2,11 +2,12 @@
 
 {% block content %}
     <div class="container mt-4">
-        <h3>Change Meal Type for {{ next_month }}</h3>
+        <h3>Change Meal Type for Next Month</h3>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-primary" type="submit">Update Meal Type</button>
         </form>
+        <p>Note: You can only change until {{ cutoff_time|date:"F j, Y, g:i A"}}</p>
     </div>
 {% endblock %}
