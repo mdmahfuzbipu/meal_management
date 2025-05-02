@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Meal Summary for {{ summary.student.name }}</h2>
+
+  <ul>
+    <li><strong>Total Days Meal Consumed:</strong> {{ summary.total_days_meal_consumed }}</li>
+    <li><strong>Actual Meal Cost:</strong> {{ summary.actual_meal_cost }}</li>
+    <li><strong>Staff Cost:</strong> {{ summary.staff_cost }}</li>
+    <li><strong>Other Costs:</strong> {{ summary.other_costs }}</li>
+    <li><strong>Total Meal Cost:</strong> {{ summary.total_meal_cost }}</li>
+  </ul>
+
+  <a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+{% endblock %}

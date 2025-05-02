@@ -5,10 +5,47 @@ from django.contrib import messages
 
 from datetime import timedelta, time, datetime, date
 
-from .models import Student, DailyMealStatus, MonthlyMealType
+from .models import Student, DailyMealStatus, MonthlyMealType,MonthlyMealSummary
 from .forms import MealTypeChangeForm
 
 # Create your views here.
+
+
+@login_required
+def student_dashboard(request):
+    student = get_object_or_404(Student, user=request.user)
+    today = timezone.now().date()
+    tomorrow = today + timedelta(days=1)
+
+    current_meal_type = MonthlyMealType.objects.filter(
+        student=student,
+        month=today.replace(day=1)
+    ).first()
+    
+    today_status = DailyMealStatus.objects.filter(student=student, date=today).first()
+    tomorrow_status = DailyMealStatus.objects.filter(student=student, date=tomorrow).first()
+    
+    return render(request, 'students/student_dashboard.html', {
+        'student':student,
+        'current_meal_type': current_meal_type,
+        'today_status': today_status,
+        'tomorrow_status': tomorrow_status,
+    })
+    
+@login_required
+def view_meal_summary(request):
+    student = get_object_or_404(Student, user=request.user)
+    
+    try:
+        summary = MonthlyMealSummary.objects.get(student=student)
+    except MonthlyMealSummary.DoesNotExist:
+        messages.warning(request, "Meal summary not found.")
+        return redirect("student_dashboard")
+    
+    return render(request, "students/meal_summary.html",{
+        "summary": summary,
+    })
+        
 
 @login_required
 def toggle_meal_status(request):
