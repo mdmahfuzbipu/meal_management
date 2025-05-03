@@ -17,16 +17,18 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path,include
-from core.views import home
+# from core.views import home
+from students.views import home
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path("",home, name="home"),
     path("admin/", admin.site.urls),
     path("managers/", include("managers.urls")),
     path("students/", include("students.urls")),
     
     path("login/", auth_views.LoginView.as_view(template_name="students/login.html"), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="home"), name="logout"),
     # path("students/", include("students.urls")),
     #path("", home, name="home"),
 ]

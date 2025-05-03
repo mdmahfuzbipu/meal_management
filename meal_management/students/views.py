@@ -52,21 +52,23 @@ def toggle_meal_status(request):
     student = Student.objects.get(user=request.user)
     tomorrow = timezone.now().date() + timedelta(days=1)
     
-    
-    if(timezone.now().time() >= time(18,0)):
-        messages.error(request, "You can't update meal status after 6:00 PM")
-        return redirect("meal_status")
-    
-    
-    status_obj, created = DailyMealStatus.objects.get_or_create(
-        student = student, date = tomorrow
-    )
-    
     if request.method == "POST":
+        if(timezone.now().time() >= time(18,0)):
+            messages.error(request, "You can't update meal status after 6:00 PM")
+            return redirect("meal_status")
+        
+        
+        status_obj, created = DailyMealStatus.objects.get_or_create(
+            student = student, date = tomorrow
+        )
+        
+
         status_obj.status = not status_obj.status
         status_obj.save()
-        messages.success(request, f"Meal turned {"ON" if status_obj.status else "OFF"} for {tomorrow}")
+        messages.success(request, f"Meal turned {'ON' if status_obj.status else 'OFF'} for {tomorrow}")
         return redirect("meal_status")
+    
+    status_obj = DailyMealStatus.objects.filter(student=student, date=tomorrow).first()    
     
     return render(request, "students/meal_toggle.html",{
         "status": status_obj,
@@ -137,6 +139,9 @@ def change_meal_type(request):
         "cutoff_time": cutoff_time
     })
 
+
+def home(request):
+    return render(request, "students/home.html")
 
 
 # def change_monthly_meal(request):

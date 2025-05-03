@@ -41,7 +41,7 @@ class DailyMealStatus(models.Model):
 class MonthlyMealType(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     month = models.DateField()
-    meal_type = models.IntegerField(choices=[(1, "Type 1"), (2, "Type 2")])
+    meal_type = models.IntegerField(choices=[(1, "Beef"), (2, "Fish")])
 
     class Meta:
         unique_together = ("student", "month")
