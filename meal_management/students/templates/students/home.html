@@ -8,7 +8,7 @@
     <a href="{% url 'student_dashboard' %}">Go to Dashboard</a><br>
         
     <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
+      {% csrf_token %}
     <button type="submit">Logout</button>
     </form>
     

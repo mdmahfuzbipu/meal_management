@@ -11,10 +11,26 @@
    <hr>
 
   <h3>Meal Info</h3>
-  <p><strong>Current Meal Type:</strong> Type {{ current_meal_type.meal_type }}</p>
-  <p><strong>Today's Meal Status:</strong> {{ today_status.status|yesno:"ON,OFF" }}</p>
-  <p><strong>Tomorrow's Meal Status:</strong> {{ tomorrow_status.status|yesno:"ON,OFF" }}</p>
+    {% if current_meal_type %}
+      <p><strong>Current Meal Type:</strong> {{ current_meal_type.name }}</p>
+  {% else %}
+      <p><strong>Current Meal Type:</strong> Not set</p>
+  {% endif %}
 
-  <a href="{% url 'meal_status' %}">Toggle Tomorrow's Meal</a><br>
-  <a href="{% url 'change_meal_type' %}">Change Meal Type</a>
+
+  {% if next_meal_type %}
+    <p><strong>Next Month Meal Type:</strong> {{ next_meal_type.name }}</p>
+  {% else %}
+    <p><strong>Next Month Meal Type:</strong> Not set</p>
+  {% endif %}
+
+
+  <p><strong>Today's Meal Status:</strong> {{ today_status|yesno:"ON,OFF" }}</p>
+  <p><strong>Tomorrow's Meal Status:</strong> {{ tomorrow_status|yesno:"ON,OFF" }}</p>
+
+  <a href="{% url 'meal_toggle' %}">Toggle Tomorrow's Meal</a><br>
+  <a href="{% url 'change_meal_type' %}">Change Meal Type</a><br>
+  <a href="{% url 'meal_summary' %}">View Monthly Summary</a><br>
+  <a href="{% url 'meal_history' %}">View This Month's Meal History</a>
+
 {% endblock %}

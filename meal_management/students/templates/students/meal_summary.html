@@ -1,16 +1,21 @@
 {% extends "base.html" %}
-
 {% block content %}
+  <h2>{{ summary.student.name }} - {{ summary.month|date:"F Y" }} Summary</h2>
 
-<h2>Meal Summary for {{ summary.student.name }}</h2>
+    <form method="get" class="mb-3">
+      <label for="month">Select Month:</label>
+      <input type="month" id="month" name="month" value="{{ selected_month|date:'Y-m' }}">
+      <button type="submit" class="btn btn-primary btn-sm">View</button>
+    </form>
 
-  <ul>
-    <li><strong>Total Days Meal Consumed:</strong> {{ summary.total_days_meal_consumed }}</li>
-    <li><strong>Actual Meal Cost:</strong> {{ summary.actual_meal_cost }}</li>
-    <li><strong>Staff Cost:</strong> {{ summary.staff_cost }}</li>
-    <li><strong>Other Costs:</strong> {{ summary.other_costs }}</li>
-    <li><strong>Total Meal Cost:</strong> {{ summary.total_meal_cost }}</li>
-  </ul>
+  <p><strong>Days Meal Taken:</strong> {{ summary.days_meal_consumed }}</p>
+  <p><strong>Meal Type:</strong> {{ summary.meal_type.name }}</p>
+  <p><strong>Cost Per Day:</strong> {{ summary.meal_type.cost_per_day }}</p>
+  <p><strong>Actual Meal Cost:</strong> {{ summary.actual_meal_cost }}</p>
+  <p><strong>Staff Cost:</strong> {{ summary.staff_cost }}</p>
+  <p><strong>Other Costs:</strong> {{ summary.other_costs }}</p>
+  <hr>
+  <p><strong>Total Meal Cost:</strong> {{ summary.total_meal_cost }}</p>
 
-  <a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+  <a href="{% url 'student_dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
 {% endblock %}

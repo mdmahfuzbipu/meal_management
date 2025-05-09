@@ -1,5 +1,6 @@
 from django import forms
+from .models import MealType
 
 class MealTypeChangeForm(forms.Form):
-    MEAL_TYPE_CHOICES = [(1, 'Beef'), (2, 'Fish')]
-    meal_type = forms.ChoiceField(choices=MEAL_TYPE_CHOICES, widget=forms.RadioSelect)
+    meal_type = forms.ModelChoiceField(queryset=MealType.objects.all(), widget=forms.RadioSelect)
+    

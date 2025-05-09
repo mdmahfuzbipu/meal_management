@@ -3,7 +3,14 @@
 {% block content %}
     <div class="container mt-4">
         <h3>Current Meal Type</h3>
-        <p>Your meal type for this month: <strong>Type {{ meal_type }}</strong></p>
+        {% if meal_type %}
+            <p>Your meal type for this month: <strong>Type {{ meal_type.name }}</strong></p>
+        {% else %}
+            <p style="color: red;"><strong>You haven’t set your meal type for this month yet.</strong></p>
+        {% endif %}
+
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
+
 
 {% endblock %}
